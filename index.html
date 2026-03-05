@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClassBot — Your Classes, Attended.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #07080a;
+      --bg-elevated: #0f1114;
+      --bg-card: #13161b;
+      --bg-card-hover: #1a1e25;
+      --accent: #00e87b;
+      --accent-dim: #00c96a;
+      --accent-glow: rgba(0, 232, 123, 0.15);
+      --accent-glow-strong: rgba(0, 232, 123, 0.3);
+      --text: #e8eaed;
+      --text-dim: #8b9099;
+      --text-muted: #5a5f6a;
+      --border: #1e2228;
+      --border-accent: rgba(0, 232, 123, 0.25);
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+      --radius: 14px;
+      --radius-sm: 8px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ======= NOISE OVERLAY ======= */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 128px;
+    }
+
+    /* ======= GLOW GRADIENTS ======= */
+    .glow-top {
+      position: absolute;
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 900px;
+      height: 500px;
+      background: radial-gradient(ellipse, var(--accent-glow) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .glow-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ======= NAVIGATION ======= */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 0 40px;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(7, 8, 10, 0.7);
+      backdrop-filter: blur(20px) saturate(1.4);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.3s;
+    }
+
+    .nav-logo {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1.35rem;
+      color: var(--text);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-logo .dot {
+      width: 10px;
+      height: 10px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 12px var(--accent-glow-strong);
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.85); }
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 36px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 28px;
+      border-radius: 50px;
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: all 0.25s ease;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #070a08;
+      box-shadow: 0 0 24px var(--accent-glow), 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .btn-primary:hover {
+      background: #1affa0;
+      transform: translateY(-2px);
+      box-shadow: 0 0 40px var(--accent-glow-strong), 0 4px 16px rgba(0,0,0,0.3);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .btn-sm {
+      padding: 10px 22px;
+      font-size: 0.85rem;
+    }
+
+    /* ======= HERO ======= */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      overflow: hidden;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 18px 6px 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      margin-bottom: 32px;
+      opacity: 0;
+      animation: fade-up 0.7s ease 0.2s forwards;
+    }
+
+    .hero-badge .badge-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    .hero h1 {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(3rem, 7.5vw, 5.5rem);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      max-width: 800px;
+      opacity: 0;
+      animation: fade-up 0.8s ease 0.35s forwards;
+    }
+
+    .hero h1 .accent {
+      color: var(--accent);
+      position: relative;
+    }
+
+    .hero h1 .accent::after {
+      content: '';
+      position: absolute;
+      bottom: 2px;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--accent);
+      border-radius: 2px;
+      opacity: 0.3;
+    }
+
+    .hero-sub {
+      font-size: clamp(1.05rem, 2vw, 1.25rem);
+      color: var(--text-dim);
+      max-width: 520px;
+      margin-top: 24px;
+      line-height: 1.7;
+      opacity: 0;
+      animation: fade-up 0.8s ease 0.5s forwards;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 44px;
+      opacity: 0;
+      animation: fade-up 0.8s ease 0.65s forwards;
+    }
+
+    .hero-note {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 16px;
+      opacity: 0;
+      animation: fade-up 0.8s ease 0.75s forwards;
+    }
+
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ======= DEMO TERMINAL ======= */
+    .hero-demo {
+      margin-top: 64px;
+      width: 100%;
+      max-width: 680px;
+      opacity: 0;
+      animation: fade-up 0.9s ease 0.85s forwards;
+    }
+
+    .terminal {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.5), 0 0 60px var(--accent-glow);
+    }
+
+    .terminal-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 18px;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .terminal-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .terminal-dot.red { background: #ff5f57; }
+    .terminal-dot.yellow { background: #febc2e; }
+    .terminal-dot.green { background: #28c840; }
+
+    .terminal-title {
+      flex: 1;
+      text-align: center;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-family: var(--font-body);
+    }
+
+    .terminal-body {
+      padding: 24px;
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      font-size: 0.85rem;
+      line-height: 1.85;
+      min-height: 200px;
+    }
+
+    .terminal-line {
+      opacity: 0;
+      animation: term-line 0.4s ease forwards;
+    }
+
+    .terminal-line .prompt { color: var(--accent); }
+    .terminal-line .cmd { color: var(--text); }
+    .terminal-line .info { color: var(--text-dim); }
+    .terminal-line .success { color: var(--accent); }
+    .terminal-line .time { color: #f59e0b; }
+
+    @keyframes term-line {
+      from { opacity: 0; transform: translateX(-8px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    /* ======= SECTION BASICS ======= */
+    section {
+      position: relative;
+      padding: 120px 24px;
+    }
+
+    .section-label {
+      font-family: var(--font-display);
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(2rem, 4.5vw, 3rem);
+      letter-spacing: -0.025em;
+      line-height: 1.15;
+      max-width: 600px;
+    }
+
+    .section-desc {
+      color: var(--text-dim);
+      font-size: 1.05rem;
+      line-height: 1.7;
+      max-width: 520px;
+      margin-top: 16px;
+    }
+
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+
+    /* ======= HOW IT WORKS ======= */
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 64px;
+    }
+
+    .step-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px 32px;
+      position: relative;
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+
+    .step-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: var(--radius);
+      padding: 1px;
+      background: linear-gradient(135deg, var(--border-accent), transparent 50%);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .step-card:hover::before { opacity: 1; }
+    .step-card:hover { background: var(--bg-card-hover); transform: translateY(-4px); }
+
+    .step-number {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 3rem;
+      color: var(--accent);
+      opacity: 0.15;
+      line-height: 1;
+      margin-bottom: 20px;
+    }
+
+    .step-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--accent-glow);
+      border: 1px solid var(--border-accent);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      margin-bottom: 20px;
+    }
+
+    .step-card h3 {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+    }
+
+    .step-card p {
+      color: var(--text-dim);
+      font-size: 0.92rem;
+      line-height: 1.65;
+    }
+
+    /* ======= FEATURES ======= */
+    .features-section {
+      background: var(--bg-elevated);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-top: 64px;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px 32px;
+      transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+      border-color: var(--border-accent);
+      background: var(--bg-card-hover);
+    }
+
+    .feature-icon {
+      width: 44px;
+      height: 44px;
+      background: var(--accent-glow);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+    }
+
+    .feature-card h3 {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+    }
+
+    .feature-card p {
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    /* ======= PRICING ======= */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 64px;
+      align-items: start;
+    }
+
+    .price-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 40px 32px;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .price-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--border-accent);
+    }
+
+    .price-card.featured {
+      border-color: var(--accent);
+      box-shadow: 0 0 40px var(--accent-glow), 0 16px 48px rgba(0,0,0,0.3);
+    }
+
+    .price-card.featured::before {
+      content: 'Most Popular';
+      position: absolute;
+      top: -13px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent);
+      color: #070a08;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 4px 16px;
+      border-radius: 50px;
+    }
+
+    .price-tier {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 6px;
+    }
+
+    .price-desc {
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      margin-bottom: 24px;
+    }
+
+    .price-amount {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 3rem;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .price-amount span {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text-dim);
+    }
+
+    .price-period {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    .price-features {
+      list-style: none;
+      margin-bottom: 32px;
+    }
+
+    .price-features li {
+      padding: 8px 0;
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .price-features li::before {
+      content: '';
+      width: 18px;
+      height: 18px;
+      background: var(--accent-glow);
+      border-radius: 50%;
+      display: flex;
+      flex-shrink: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='%2300e87b' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6.5 11.5L3 8l1-1 2.5 2.5L11 5l1 1-5.5 5.5z'/%3E%3C/svg%3E");
+      background-size: 14px;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    .price-features li.disabled {
+      color: var(--text-muted);
+      opacity: 0.5;
+    }
+
+    .price-features li.disabled::before {
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='%235a5f6a' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4 7.5h8v1H4z'/%3E%3C/svg%3E");
+    }
+
+    .price-card .btn {
+      width: 100%;
+      justify-content: center;
+    }
+
+    /* ======= PLATFORMS ======= */
+    .platforms {
+      text-align: center;
+    }
+
+    .platform-icons {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin-top: 48px;
+      flex-wrap: wrap;
+    }
+
+    .platform-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .platform-icon {
+      width: 72px;
+      height: 72px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      transition: all 0.3s;
+    }
+
+    .platform-item:hover .platform-icon {
+      border-color: var(--border-accent);
+      background: var(--bg-card-hover);
+      transform: translateY(-4px);
+    }
+
+    .platform-name {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      font-weight: 500;
+    }
+
+    /* ======= FAQ ======= */
+    .faq-list {
+      max-width: 720px;
+      margin: 64px auto 0;
+    }
+
+    .faq-item {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .faq-question {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 24px 0;
+      text-align: left;
+      cursor: pointer;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 1.05rem;
+      color: var(--text);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      transition: color 0.2s;
+    }
+
+    .faq-question:hover { color: var(--accent); }
+
+    .faq-chevron {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      transition: transform 0.3s ease;
+      color: var(--text-muted);
+    }
+
+    .faq-item.open .faq-chevron {
+      transform: rotate(180deg);
+      color: var(--accent);
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease, padding 0.35s ease;
+    }
+
+    .faq-item.open .faq-answer {
+      max-height: 600px;
+      padding-bottom: 24px;
+    }
+
+    .faq-answer p {
+      color: var(--text-dim);
+      font-size: 0.92rem;
+      line-height: 1.7;
+    }
+
+    /* ======= CTA SECTION ======= */
+    .cta-section {
+      text-align: center;
+      padding: 120px 24px 140px;
+    }
+
+    .cta-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 80px 40px;
+      max-width: 720px;
+      margin: 0 auto;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-box::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 300px;
+      background: radial-gradient(ellipse, var(--accent-glow) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .cta-box h2 {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .cta-box p {
+      color: var(--text-dim);
+      font-size: 1.05rem;
+      margin-bottom: 36px;
+      position: relative;
+    }
+
+    .cta-box .btn { position: relative; }
+
+    /* ======= FOOTER ======= */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 24px;
+    }
+
+    .footer-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-copy {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .footer-links a {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--text); }
+
+    /* ======= SCROLL ANIMATIONS ======= */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.35s; }
+
+    /* ======= RESPONSIVE ======= */
+    @media (max-width: 900px) {
+      .steps-grid { grid-template-columns: 1fr; }
+      .features-grid { grid-template-columns: 1fr; }
+      .pricing-grid { grid-template-columns: 1fr; max-width: 420px; margin-left: auto; margin-right: auto; }
+      .nav-links { display: none; }
+      .hero-actions { flex-direction: column; }
+    }
+
+    @media (max-width: 600px) {
+      nav { padding: 0 20px; }
+      section { padding: 80px 20px; }
+      .step-card, .feature-card, .price-card { padding: 28px 24px; }
+      .cta-box { padding: 48px 24px; }
+      .footer-inner { flex-direction: column; gap: 16px; text-align: center; }
+      .platform-icons { gap: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#" class="nav-logo">
+      <span class="dot"></span>
+      ClassBot
+    </a>
+    <ul class="nav-links">
+      <li><a href="#how-it-works">How it works</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+    <a href="#pricing" class="btn btn-primary btn-sm">Get started free</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="glow-top"></div>
+    <div class="glow-orb" style="width:400px;height:400px;background:rgba(0,232,123,0.04);top:10%;right:-100px;"></div>
+
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      Now available for Chrome
+    </div>
+
+    <h1>Your classes,<br><span class="accent">attended</span>.</h1>
+
+    <p class="hero-sub">
+      ClassBot joins your online classes, mutes your mic and camera, captures every word, and responds when the teacher calls your name.
+    </p>
+
+    <div class="hero-actions">
+      <a href="#pricing" class="btn btn-primary">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        Add to Chrome &mdash; Free
+      </a>
+      <a href="#how-it-works" class="btn btn-outline">See how it works</a>
+    </div>
+
+    <p class="hero-note">7-day free trial. No credit card required.</p>
+
+    <!-- TERMINAL DEMO -->
+    <div class="hero-demo">
+      <div class="terminal">
+        <div class="terminal-bar">
+          <div class="terminal-dot red"></div>
+          <div class="terminal-dot yellow"></div>
+          <div class="terminal-dot green"></div>
+          <span class="terminal-title">ClassBot</span>
+        </div>
+        <div class="terminal-body" id="terminal-body">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how-it-works">
+    <div class="container">
+      <div class="reveal">
+        <p class="section-label">How it works</p>
+        <h2 class="section-title">Three steps. Then forget about it.</h2>
+        <p class="section-desc">Install the extension, enter your class schedule, and ClassBot handles the rest. Every. Single. Day.</p>
+      </div>
+
+      <div class="steps-grid">
+        <div class="step-card reveal reveal-delay-1">
+          <div class="step-number">01</div>
+          <div class="step-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </div>
+          <h3>Install the extension</h3>
+          <p>One click from the Chrome Web Store. Works on Chromebooks, Mac, Windows, and Linux. No app downloads, no setup wizards.</p>
+        </div>
+
+        <div class="step-card reveal reveal-delay-2">
+          <div class="step-number">02</div>
+          <div class="step-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          <h3>Enter your schedule</h3>
+          <p>Add your meeting links, class times, and how long each period lasts. Or sync your Google Calendar and let ClassBot figure it out.</p>
+        </div>
+
+        <div class="step-card reveal reveal-delay-3">
+          <div class="step-number">03</div>
+          <div class="step-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <h3>Let it run</h3>
+          <p>ClassBot joins each class on time, mutes your mic and camera, captures the full transcript, and leaves when class is over. You review later.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features" class="features-section">
+    <div class="container">
+      <div class="reveal">
+        <p class="section-label">Features</p>
+        <h2 class="section-title">Everything you'd do in class. Without being there.</h2>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card reveal reveal-delay-1">
+          <div class="feature-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+          </div>
+          <h3>Auto-mute on join</h3>
+          <p>Camera and microphone get muted before you even enter the meeting. No accidental broadcasts. No awkward moments.</p>
+        </div>
+
+        <div class="feature-card reveal reveal-delay-2">
+          <div class="feature-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <h3>AI responses</h3>
+          <p>When the teacher calls your name, ClassBot writes a short, natural response and sends it in the chat. Sounds like you because it learns your style.</p>
+        </div>
+
+        <div class="feature-card reveal reveal-delay-3">
+          <div class="feature-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          </div>
+          <h3>Full transcripts</h3>
+          <p>Every word from every class, saved automatically. Search, review, and study from real lecture content instead of guessing what you missed.</p>
+        </div>
+
+        <div class="feature-card reveal reveal-delay-4">
+          <div class="feature-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <h3>Smart exit</h3>
+          <p>ClassBot listens for dismissal phrases like "class dismissed" or "you can leave" and exits immediately. It also watches when other participants start leaving — if most of the class drops, ClassBot goes with them. Or it leaves when the scheduled time is up.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section id="pricing">
+    <div class="container">
+      <div class="reveal" style="text-align:center;">
+        <p class="section-label">Pricing</p>
+        <h2 class="section-title" style="margin:0 auto;">Less than a coffee a week.</h2>
+        <p class="section-desc" style="margin:16px auto 0;">Start free. Upgrade when you're ready. Cancel anytime.</p>
+      </div>
+
+      <div class="pricing-grid" style="max-width:1040px;margin:0 auto;grid-template-columns:1fr 1fr 1fr;">
+        <!-- FREE TRIAL -->
+        <div class="price-card reveal reveal-delay-1">
+          <p class="price-tier">Free Trial</p>
+          <p class="price-desc">Try everything for a week</p>
+          <p class="price-amount">$0</p>
+          <p class="price-period">for 7 days</p>
+          <ul class="price-features">
+            <li>Auto-join + auto-mute</li>
+            <li>AI responses</li>
+            <li>Transcript capture</li>
+            <li>Transcript export (.txt)</li>
+            <li>Google Calendar sync</li>
+            <li>AI class summaries</li>
+            <li class="disabled">Smarter 70B AI model</li>
+            <li class="disabled">Natural response timing</li>
+            <li class="disabled">Full class memory</li>
+          </ul>
+          <a href="#" class="btn btn-outline" style="width:100%;justify-content:center;">Start free trial</a>
+        </div>
+
+        <!-- STUDENT -->
+        <div class="price-card featured reveal reveal-delay-2">
+          <p class="price-tier">Student</p>
+          <p class="price-desc">Everything you need, every day</p>
+          <p class="price-amount">$7<span>/mo</span></p>
+          <p class="price-period">or $59/year (save 30%)</p>
+          <ul class="price-features">
+            <li>Auto-join + auto-mute</li>
+            <li>AI responses</li>
+            <li>Transcript capture</li>
+            <li>Transcript export (.txt)</li>
+            <li>Google Calendar sync</li>
+            <li>AI class summaries</li>
+            <li class="disabled">Smarter 70B AI model</li>
+            <li class="disabled">Natural response timing</li>
+            <li class="disabled">Full class memory</li>
+          </ul>
+          <a href="#" class="btn btn-primary" style="width:100%;justify-content:center;">Get started</a>
+        </div>
+
+        <!-- PRO -->
+        <div class="price-card reveal reveal-delay-3">
+          <p class="price-tier">Pro</p>
+          <p class="price-desc">Undetectable. Uncanny. Unstoppable.</p>
+          <p class="price-amount">$10<span>/mo</span></p>
+          <p class="price-period">or $84/year (save 30%)</p>
+          <ul class="price-features">
+            <li>Auto-join + auto-mute</li>
+            <li>AI responses</li>
+            <li>Transcript capture</li>
+            <li>Transcript export (.txt)</li>
+            <li>Google Calendar sync</li>
+            <li>AI class summaries</li>
+            <li>Smarter 70B AI model</li>
+            <li>Natural response timing</li>
+            <li>Full class memory</li>
+          </ul>
+          <a href="#" class="btn btn-outline" style="width:100%;justify-content:center;">Go Pro</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PLATFORMS -->
+  <section class="platforms">
+    <div class="container">
+      <div class="reveal">
+        <p class="section-label">Works everywhere</p>
+        <h2 class="section-title" style="margin:0 auto;">Your device. Your browser. It just works.</h2>
+      </div>
+
+      <div class="platform-icons reveal reveal-delay-1">
+        <div class="platform-item">
+          <div class="platform-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="var(--accent)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1.41 16.09V18.9c-2.16-.52-3.78-2.4-3.97-4.69h1.81c.18 1.34 1.13 2.4 2.16 2.72v-4.66l-.42-.08c-1.97-.45-3.28-1.58-3.28-3.55 0-2.18 1.78-3.82 3.7-4.12V2.8h1.4v1.72c1.96.39 3.44 1.98 3.62 4.03h-1.81c-.16-1.19-.96-2.16-1.81-2.48v4.38l.54.12c2.08.46 3.42 1.65 3.42 3.63 0 2.32-1.85 3.95-3.96 4.25v1.64h-1.4z"/></svg>
+          </div>
+          <span class="platform-name">Chromebook</span>
+        </div>
+        <div class="platform-item">
+          <div class="platform-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="var(--accent)"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+          </div>
+          <span class="platform-name">Mac</span>
+        </div>
+        <div class="platform-item">
+          <div class="platform-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="var(--accent)"><path d="M3 5.5L10.5 4.5V11.5H3V5.5ZM3 12.5H10.5V19.5L3 18.5V12.5ZM11.5 4.3L21 3V11.5H11.5V4.3ZM11.5 12.5H21V21L11.5 19.7V12.5Z"/></svg>
+          </div>
+          <span class="platform-name">Windows</span>
+        </div>
+        <div class="platform-item">
+          <div class="platform-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="var(--accent)"><circle cx="12" cy="12" r="4"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+          </div>
+          <span class="platform-name">Linux</span>
+        </div>
+        <div class="platform-item">
+          <div class="platform-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="var(--accent)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+          </div>
+          <span class="platform-name">Google Meet</span>
+        </div>
+        <div class="platform-item">
+          <div class="platform-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="var(--accent)"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm8 5a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg>
+          </div>
+          <span class="platform-name">Zoom</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="container">
+      <div class="reveal" style="text-align:center;">
+        <p class="section-label">FAQ</p>
+        <h2 class="section-title" style="margin:0 auto;">Questions? Answered.</h2>
+      </div>
+
+      <div class="faq-list">
+        <div class="faq-item reveal">
+          <button class="faq-question">
+            Will my teacher know I'm using ClassBot?
+            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-answer">
+            <p>ClassBot joins as you, using your own Google or Zoom account in your browser. To the teacher, it looks exactly like you're in class. Your camera is off, your mic is muted, and if they call on you, ClassBot replies in the chat naturally.</p>
+          </div>
+        </div>
+
+        <div class="faq-item reveal">
+          <button class="faq-question">
+            Does it work on Chromebooks?
+            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-answer">
+            <p>Yes. ClassBot is a Chrome extension, so it works natively on any Chromebook. No app downloads or special setup needed. It also works on Mac, Windows, and Linux.</p>
+          </div>
+        </div>
+
+        <div class="faq-item reveal">
+          <button class="faq-question">
+            Is my data private?
+            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-answer">
+            <p>Your transcripts stay on your device. We never see your meeting content, your passwords, or your Google account details. The extension runs locally in your own browser. We only store your email and subscription status.</p>
+          </div>
+        </div>
+
+        <div class="faq-item reveal">
+          <button class="faq-question">
+            What if the teacher asks me to turn on my camera?
+            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-answer">
+            <p>ClassBot keeps your camera off for privacy. If a teacher directly asks you to enable video, ClassBot can send a chat reply like "Sorry, my camera isn't working today." You can customize this response in settings.</p>
+          </div>
+        </div>
+
+        <div class="faq-item reveal">
+          <button class="faq-question">
+            Can I cancel anytime?
+            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-answer">
+            <p>Yes. No contracts, no cancellation fees. Cancel your subscription anytime from your account settings and you'll keep access until the end of your billing period.</p>
+          </div>
+        </div>
+
+        <div class="faq-item reveal">
+          <button class="faq-question">
+            Does it work with Zoom?
+            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-answer">
+            <p>Yes. ClassBot joins Zoom meetings through the Zoom web client in your browser. It works the same way as Google Meet: auto-join, mute, respond, and leave.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="cta-box reveal">
+      <h2>Stop attending class.<br>Start <span style="color:var(--accent)">acing</span> it.</h2>
+      <p>7 days free. Works on every device. Set up in 2 minutes.</p>
+      <a href="#pricing" class="btn btn-primary">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        Add to Chrome &mdash; Free
+      </a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <p class="footer-copy">&copy; 2026 ClassBot. All rights reserved.</p>
+      <ul class="footer-links">
+        <li><a href="#">Privacy</a></li>
+        <li><a href="#">Terms</a></li>
+        <li><a href="#">Support</a></li>
+        <li><a href="#">Twitter</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script>
+    // ======= TERMINAL ANIMATION =======
+    const lines = [
+      { prompt: '~', cmd: ' classbot run today' },
+      { info: 'Loading schedule... 7 classes found' },
+      { info: '' },
+      { time: '09:00', info: ' A-Band' },
+      { success: '  Joined meeting' },
+      { success: '  Mic muted  |  Camera off' },
+      { success: '  Captions enabled  |  Transcript recording' },
+      { info: '' },
+      { time: '09:32', info: ' Teacher: "Ethan, what do you think?"' },
+      { success: '  AI response sent: "I think the key theme here is..."' },
+      { info: '' },
+      { time: '09:35', info: ' Teacher: "Class dismissed"' },
+      { success: '  Left meeting  |  Transcript saved (2,847 words)' },
+      { info: '' },
+      { time: '09:35', info: ' B-Band' },
+      { success: '  Joined meeting' },
+      { success: '  Mic muted  |  Camera off' },
+    ];
+
+    function renderTerminal() {
+      const body = document.getElementById('terminal-body');
+      body.innerHTML = '';
+
+      lines.forEach((line, i) => {
+        const el = document.createElement('div');
+        el.className = 'terminal-line';
+        el.style.animationDelay = `${1.2 + i * 0.18}s`;
+
+        if (line.cmd !== undefined) {
+          el.innerHTML = `<span class="prompt">$</span><span class="cmd">${line.cmd}</span>`;
+        } else if (line.success) {
+          el.innerHTML = `<span class="success">${line.success}</span>`;
+        } else if (line.time) {
+          el.innerHTML = `<span class="time">[${line.time}]</span><span class="info">${line.info}</span>`;
+        } else {
+          el.innerHTML = `<span class="info">${line.info}</span>`;
+        }
+
+        body.appendChild(el);
+      });
+    }
+
+    renderTerminal();
+
+    // ======= SCROLL REVEAL =======
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+    reveals.forEach(el => observer.observe(el));
+
+    // ======= FAQ TOGGLES =======
+    document.querySelectorAll('.faq-question').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const item = btn.parentElement;
+        const wasOpen = item.classList.contains('open');
+
+        // close all
+        document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+
+        // toggle clicked
+        if (!wasOpen) item.classList.add('open');
+      });
+    });
+
+    // ======= SMOOTH NAV SCROLL =======
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+      link.addEventListener('click', e => {
+        const href = link.getAttribute('href');
+        // Skip bare "#" links (logo, placeholder footer links) — let browser handle
+        if (href === '#') return;
+        const target = document.querySelector(href);
+        if (target) {
+          e.preventDefault();
+          // Offset by nav height so heading isn't hidden behind fixed nav
+          const navHeight = document.querySelector('nav').offsetHeight;
+          const top = target.getBoundingClientRect().top + window.scrollY - navHeight;
+          window.scrollTo({ top, behavior: 'smooth' });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
