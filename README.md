@@ -1,1 +1,1 @@
-Go to: https://app.netlify.com/projects/luminaryv1/overview
+Go to: https://classbot-test.netlify.app/
