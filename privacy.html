@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy — ClassBot</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #07080a;
+      --bg-elevated: #0f1114;
+      --bg-card: #13161b;
+      --accent: #00e87b;
+      --text: #e8eaed;
+      --text-dim: #8b9099;
+      --border: #1e2228;
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+      --radius: 14px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 60px 24px 100px;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 40px;
+      color: var(--text-dim);
+      font-size: 0.9rem;
+    }
+    .back-link:hover { color: var(--accent); }
+
+    h1 {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .last-updated {
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      margin-bottom: 48px;
+    }
+
+    h2 {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-top: 40px;
+      margin-bottom: 12px;
+      color: var(--accent);
+    }
+
+    p, li {
+      color: var(--text-dim);
+      margin-bottom: 12px;
+    }
+
+    ul {
+      padding-left: 20px;
+      margin-bottom: 16px;
+    }
+
+    li { margin-bottom: 6px; }
+
+    .highlight-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin: 24px 0;
+    }
+
+    .highlight-box p {
+      color: var(--text);
+      margin-bottom: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/" class="back-link">&larr; Back to ClassBot</a>
+
+    <h1>Privacy Policy</h1>
+    <p class="last-updated">Last updated: March 23, 2026</p>
+
+    <div class="highlight-box">
+      <p>ClassBot does not collect, store, or transmit any of your data to our servers. All data stays on your device.</p>
+    </div>
+
+    <h2>What data ClassBot stores</h2>
+    <p>ClassBot stores the following data locally on your device using Chrome's built-in storage:</p>
+    <ul>
+      <li><strong>Your display name</strong> — used to detect when you are addressed in a meeting</li>
+      <li><strong>Your API key</strong> — used to authenticate with your chosen AI provider</li>
+      <li><strong>Meeting schedule</strong> — meeting names, URLs, times, and days you configure</li>
+      <li><strong>Meeting transcripts</strong> — captions and chat messages captured during meetings</li>
+      <li><strong>Extension preferences</strong> — your settings for auto-mute, auto-respond, etc.</li>
+    </ul>
+    <p>This data never leaves your device. It is stored in Chrome's extension storage and is not accessible to websites or other extensions.</p>
+
+    <h2>What data is sent to third parties</h2>
+    <p>When ClassBot generates a chat response, it sends the relevant meeting context (recent captions or chat messages) to the AI provider you selected in settings:</p>
+    <ul>
+      <li>Groq (api.groq.com)</li>
+      <li>OpenAI (api.openai.com)</li>
+      <li>Anthropic (api.anthropic.com)</li>
+      <li>Or a custom API endpoint you configure</li>
+    </ul>
+    <p>These requests are authenticated with your own API key. ClassBot does not proxy, intercept, or store these API calls on any server we operate. Your data goes directly from your browser to the AI provider.</p>
+
+    <h2>What we do NOT do</h2>
+    <ul>
+      <li>We do not collect analytics or usage data</li>
+      <li>We do not use cookies or tracking pixels</li>
+      <li>We do not sell or share any user data</li>
+      <li>We do not have servers that receive your data</li>
+      <li>We do not access your Google account or calendar</li>
+    </ul>
+
+    <h2>Data retention</h2>
+    <p>Meeting transcripts are automatically deleted after the number of days you set in your preferences (default: 30 days). You can also manually delete individual transcripts from the extension popup at any time.</p>
+    <p>All other data (settings, schedules) persists until you uninstall the extension or clear it manually.</p>
+
+    <h2>Permissions explained</h2>
+    <ul>
+      <li><strong>storage</strong> — save your settings, schedules, and transcripts locally</li>
+      <li><strong>activeTab</strong> — identify when you're on a Google Meet page</li>
+      <li><strong>alarms</strong> — trigger scheduled meeting joins and auto-leave timers</li>
+      <li><strong>notifications</strong> — alert you before a meeting starts</li>
+      <li><strong>tabs</strong> — open meeting tabs and check for duplicate tabs</li>
+      <li><strong>Host access to meet.google.com</strong> — interact with the Google Meet interface (chat, captions, join/leave)</li>
+      <li><strong>Host access to AI API domains</strong> — send your messages to your chosen AI provider for response generation</li>
+    </ul>
+
+    <h2>Children's privacy</h2>
+    <p>ClassBot does not knowingly collect personal information from children under 13. The extension is intended for use by students and professionals who manage their own API keys and meeting schedules.</p>
+
+    <h2>Changes to this policy</h2>
+    <p>If we update this privacy policy, the changes will be posted on this page with an updated date. Continued use of ClassBot after changes constitutes acceptance of the revised policy.</p>
+
+    <h2>Contact</h2>
+    <p>If you have questions about this privacy policy, contact us at <a href="mailto:chichiroxursox@gmail.com">chichiroxursox@gmail.com</a>.</p>
+  </div>
+</body>
+</html>
